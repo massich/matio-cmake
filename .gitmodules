@@ -1,0 +1,3 @@
+[submodule "matio"]
+	path = matio
+	url = https://github.com/tbeu/matio.git

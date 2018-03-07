@@ -68,9 +68,8 @@ before_build:
   - ps: $env:CMAKE_PREFIX_PATH='C:\conda\Library\cmake'
   - cmake -G "Visual Studio 14 2015 Win64" ..
 
-build_script:
-    - echo "done"
-#   - cmake --build .
+build:
+  project: $(APPVEYOR_BUILD_FOLDER)\build\matio.sln
 
 # test_script:
 #   - cmd: ctest -v .

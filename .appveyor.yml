@@ -1,4 +1,4 @@
-shallow_clone: true
+shallow_clone: false
 
 platform:
   # - x86
@@ -32,6 +32,8 @@ skip_commits:
 #   - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 install:
+  - mkdir c:\xx
+  - cd c:\xx
 
   ############################################################################
   # Install Conda
@@ -58,6 +60,7 @@ install:
 
 before_build:
   - cd %APPVEYOR_BUILD_FOLDER%
+  - cmd: git submodule -q update --init
   - ps: |
       mkdir build
       cd build

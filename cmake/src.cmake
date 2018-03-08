@@ -36,3 +36,8 @@ target_include_directories(matio
     PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/matio/src/
 )
 
+
+# This generates matio_export.h
+include(GenerateExportHeader)
+add_compiler_export_flags()
+generate_export_header(matio)

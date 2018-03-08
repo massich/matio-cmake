@@ -59,8 +59,7 @@ macro(MATIO_TEST_READ NAME REFERENCE PROG_NAME)
         set_tests_properties(${NAME} PROPERTIES DEPENDS "${DEPENDS}")
     endif()
     add_test(${NAME}-COMPARISON
-             ${CMAKE_COMMAND} -D TEST_DIR:STRING=${TMP_DIR}
-                              -D TEST_OUTPUT:STRING=${TMP_DIR}/${OUTPUT}
+             ${CMAKE_COMMAND} -D TEST_OUTPUT:STRING=${TMP_DIR}/${OUTPUT}
                               -D TEST_REFERENCE_DIR:STRING=${PROJECT_SOURCE_DIR}/matio/test/results
                               -D TEST_RESULT:STRING=${REFERENCE}
                               -P ${PROJECT_SOURCE_DIR}/cmake/runTest.cmake) # To compare output to reference file

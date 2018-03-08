@@ -40,10 +40,10 @@ ac_check_type(uintmax_t "")
 ac_check_type(uintptr_t "")
 ac_check_lib("" m pow)
 ac_includes_default_list()
-ac_config_file(Makefile 
-                 matio.pc 
-                 src/Makefile 
-                 getopt/Makefile 
-                 tools/Makefile 
-                 test/Makefile 
-                 documentation/Makefile)
+ac_config_file(matio/Makefile
+                 matio/matio.pc
+                 matio/src/Makefile
+                 matio/getopt/Makefile
+                 matio/tools/Makefile
+                 matio/test/Makefile
+                 matio/documentation/Makefile)

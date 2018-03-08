@@ -12,6 +12,7 @@ addons:
     - hdf5-tools
     - libhdf5-dev
     - hdf5-helpers
+    - autoconf
 
 matrix:
   include:

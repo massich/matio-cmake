@@ -37,7 +37,12 @@ target_include_directories(matio
 )
 
 
+# XXX not sure it's the right thing to do...
+set_target_properties(matio PROPERTIES
+  CXX_STANDARD_REQUIRED ON
+  CXX_VISIBILITY_PRESET hidden
+  VISIBILITY_INLINES_HIDDEN 1)
+
 # This generates matio_export.h
 include(GenerateExportHeader)
-add_compiler_export_flags()
 generate_export_header(matio)

@@ -72,6 +72,7 @@
 #cmakedefine HAVE_STDLIB_H
 #cmakedefine HAVE_STRING_H
 #cmakedefine HAVE_STRINGS_H
+#cmakedefine HAVE_STDARG_H
 #cmakedefine STDC_HEADERS
 
 #cmakedefine VERSION

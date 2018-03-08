@@ -125,6 +125,16 @@ foreach(TYPE ${TYPES})
     endif()
 endforeach()
 
+find_package(HDF5)
+if(HDF5_FOUND)
+    set(HAVE_HDF5 1)
+endif()
+
+find_package(ZLIB)
+if(ZLIB_FOUND)
+    set(HAVE_ZLIB 1)
+endif()
+
 # Check what matlab format is used by default
 set(DEFAULT_FILE_VERSION "5" CACHE STRING "Default MAT file version (4,5,7.3)")
 

@@ -36,6 +36,21 @@ target_include_directories(matio
     PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/matio/src/
 )
 
+if(NOT WIN32)
+  target_link_libraries(matio PUBLIC m)
+endif()
+
+if(HAVE_HDF5)
+  target_link_libraries(matio
+      PUBLIC ${HDF5_LIBRARIES}
+  )
+endif()
+
+if(HAVE_ZLIB)
+  target_link_libraries(matio
+      PUBLIC ZLIB::ZLIB
+  )
+endif()
 
 # XXX not sure it's the right thing to do...
 set_target_properties(matio PROPERTIES

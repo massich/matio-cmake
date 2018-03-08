@@ -31,3 +31,8 @@ set(src_SOURCES
   ${CMAKE_CURRENT_BINARY_DIR}/matio/src/matioConfig.h
 )
 add_library(matio STATIC ${src_SOURCES} )
+target_include_directories(matio
+    PRIVATE ${PROJECT_SOURCE_DIR}/matio/src/
+    PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/matio/src/
+)
+

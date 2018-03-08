@@ -35,8 +35,8 @@
 #define FC_FUNC_(name,NAME) FC_GLOBAL(name,NAME)
 #endif
 
-#cmakedefine HAVE_LONG_LONG
-#cmakedefine HAVE_LONG_DOUBLE
+#cmakedefine HAVE_LONG_LONG 1
+#cmakedefine HAVE_LONG_DOUBLE 1
 
 #define SIZEOF_CHAR @SIZEOF_CHAR@
 #define SIZEOF_DOUBLE @SIZEOF_DOUBLE@
@@ -54,19 +54,19 @@
 #cmakedefine MAT73 1
 
 #cmakedefine HAVE_ASPRINTF 1
-#cmakedefine HAVE_C99_VSNPRINTF
+#cmakedefine HAVE_C99_VSNPRINTF 1
 #cmakedefine HAVE_SNPRINTF 1
-#cmakedefine HAVE_STRCASECMP
-#cmakedefine HAVE_VA_COPY
-#cmakedefine HAVE___VA_COPY
+#cmakedefine HAVE_STRCASECMP 1
+#cmakedefine HAVE_VA_COPY 1
+#cmakedefine HAVE___VA_COPY 1
 #cmakedefine HAVE_VASPRINTF 1
 #cmakedefine HAVE_VSNPRINTF 1
 
-#cmakedefine HAVE_CTYPE_H
-#cmakedefine HAVE_STDLIB_H
-#cmakedefine HAVE_STRING_H
-#cmakedefine HAVE_STRINGS_H
-#cmakedefine HAVE_STDARG_H
+#cmakedefine HAVE_CTYPE_H 1
+#cmakedefine HAVE_STDLIB_H 1
+#cmakedefine HAVE_STRING_H 1
+#cmakedefine HAVE_STRINGS_H 1
+#cmakedefine HAVE_STDARG_H 1
 #cmakedefine STDC_HEADERS
 
 #cmakedefine VERSION

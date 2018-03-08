@@ -35,18 +35,14 @@ macro(PARSE_TEST_ARGUMENTS LIST_VARS DEFAULT_VAR)
     endforeach ()
 endmacro()
 
-# TEST_DIR is the place where to find the test executables
 if (WIN32)
     if (NOT CMAKE_BUILD_TYPE)
         set(CMAKE_BUILD_TYPE Debug)
     endif()
-    set(TEST_DIR ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE})
+    set(${TEST_DIR} ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE})
 else()
-    set(TEST_DIR ${CMAKE_CURRENT_BINARY_DIR})
+    set(${TEST_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 endif()
-
-set(TMP_DIR ${TEST_DIR}/tmp)
-file(MAKE_DIRECTORY ${TMP_DIR})
 
 macro(MATIO_TEST_READ NAME REFERENCE PROG_NAME)
     PARSE_TEST_ARGUMENTS("DEPENDS" "DEFAULT" ${ARGN})
@@ -54,18 +50,19 @@ macro(MATIO_TEST_READ NAME REFERENCE PROG_NAME)
     SEPARATE_ARGUMENTS(ARGS UNIX_COMMAND "${PROG_ARGS}")
     set(EXECUTABLE ${TEST_DIR}/${PROG_NAME}${CMAKE_EXECUTABLE_SUFFIX})
     set(OUTPUT ${NAME}.out)
-    add_test(${NAME} ${EXECUTABLE} ${PROG_ARGS} -o ${TMP_DIR}/${OUTPUT}) # To perform memcheck tests
+    add_test(${NAME} ${EXECUTABLE} ${PROG_ARGS} -o ${CMAKE_CURRENT_BINARY_DIR}/${OUTPUT}) # To perform memcheck tests
     if (DEPENDS)
         set_tests_properties(${NAME} PROPERTIES DEPENDS "${DEPENDS}")
     endif()
     add_test(${NAME}-COMPARISON
-             ${CMAKE_COMMAND} -D TEST_OUTPUT:STRING=${TMP_DIR}/${OUTPUT}
+             ${CMAKE_COMMAND} -D TEST_OUTPUT:STRING=${OUTPUT}
                               -D TEST_REFERENCE_DIR:STRING=${PROJECT_SOURCE_DIR}/matio/test/results
                               -D TEST_RESULT:STRING=${REFERENCE}
                               -P ${PROJECT_SOURCE_DIR}/cmake/runTest.cmake) # To compare output to reference file
 
     #  Add a dependency to the MATIO-matlab test so that COMPARISON tests are run after matlab ones (so they do not
     #  cleanup the files too early).
+
     if (MATLAB)
         string(REPLACE "MATIO-" "MATIO-matlab" MATDEPENDS ${NAME})
         set_tests_properties(${NAME}-COMPARISON PROPERTIES DEPENDS ${MATDEPENDS})
@@ -82,7 +79,7 @@ macro(MATIO_TEST_WRITE NAME FILENAME PROG_NAME)
     SEPARATE_ARGUMENTS(ARGS UNIX_COMMAND "${PROG_ARGS}")
     set(EXECUTABLE ${TEST_DIR}/${PROG_NAME}${CMAKE_EXECUTABLE_SUFFIX})
     set(MATIO_FILES ${MATIO_FILES} ${FILENAME})
-    add_test(${NAME} ${EXECUTABLE} ${PROG_ARGS} -o ${TMP_DIR}/${FILENAME}) # To perform memcheck tests
+    add_test(${NAME} ${EXECUTABLE} ${PROG_ARGS} -o ${CMAKE_CURRENT_BINARY_DIR}/${FILENAME}) # To perform memcheck tests
 endmacro()
 
 macro(MATIO_TEST_MATLAB_READ NAME FILE TEST_TYPE CLASS)
@@ -102,6 +99,8 @@ macro(MATIO_TEST_MATLAB_READ NAME FILE TEST_TYPE CLASS)
     endif()
 endmacro()
 
+#MATIO_TEST(TEST_SNPRINTF test_snprintf)
+
 set(v4_vars var1 var11 var24)
 set(vars)
 foreach(i RANGE 1 69)
@@ -112,10 +111,10 @@ set(uncompressed_vars ${vars})
 
 set(HDFTESTS)
 if (MAT73)
-    # XXX don't test HDF5 as files are missing
-    # set(HDFTESTS hdf)
-    # set(hdf_vars ${vars})
-    # set(special_vars var23 var27 var52 var66)
+    XXX still broken
+    set(HDFTESTS hdf)
+    set(hdf_vars ${vars})
+    set(special_vars var23 var27 var52 var66)
 endif()
 
 foreach(vers v4 compressed uncompressed ${HDFTESTS})
@@ -129,14 +128,13 @@ foreach(vers v4 compressed uncompressed ${HDFTESTS})
                 endif()
             endif()
             set(testname read-${vers}-${endian}-${var})
-            set(input ${CMAKE_CURRENT_SOURCE_DIR}/matio/test/datasets/matio_test_cases_${vers}_${endian}.mat)
+            set(input ${PROJECT_SOURCE_DIR}/matio/test/datasets/matio_test_cases_${vers}_${endian}.mat)
             set(reference read-${var}${MODIFIER}.out)
             MATIO_TEST_READ(MATIO-${testname} ${reference} test_mat readvar ${input} ${var})
         endforeach()
     endforeach()
 endforeach()
 
-# Now take care of writing tests
 set(MATIO_WRITE_TESTS_NUMERIC
      write_2d_numeric write_complex_2d_numeric write_struct_2d_numeric
      write_struct_complex_2d_numeric write_cell_2d_numeric write_cell_complex_2d_numeric)
@@ -159,11 +157,9 @@ set(writeslab_vars              d f i)
 
 set(MATIO_EMPTY_TESTS  write_empty_2d_numeric write_empty_struct write_empty_cell)
 set(MATIO_SPARSE_TESTS write_sparse write_complex_sparse)
-# XXX
 #set(MATIO_OTHER_TESTS writeinf writenan writenull writeslab)
 #   Invalidate writeslab tests which fail with segfault and cannot be xfailed.
 set(MATIO_OTHER_TESTS writeinf writenull)
-
 foreach (version ${VERSIONS})
     foreach(type write_char ${MATIO_SPARSE_TESTS} ${MATIO_EMPTY_TESTS} ${MATIO_OTHER_TESTS})
         set(testname ${type}-${version})
@@ -175,26 +171,20 @@ foreach (version ${VERSIONS})
             ${type} STREQUAL "writenull")
             set(MODIFIER "-${version}")
         endif()
-
-        MATIO_TEST_WRITE(MATIO-${testname} ${filename} test_mat -v ${version} ${type} -o ${TMP_DIR}/${filename})
-        # set(EXECUTABLE ${TEST_DIR}/test_mat${CMAKE_EXECUTABLE_SUFFIX})
-        # add_test(MATIO-${testname} ${EXECUTABLE} -v ${version} ${type} -o ${TMP_DIR}/${filename})
-
+        MATIO_TEST_WRITE(MATIO-${testname} ${filename} test_mat -v ${version} ${type})
         MATIO_TEST_MATLAB_READ(MATIO-matlab-${testname} ${filename} ${type} ${class} DEPENDS MATIO-${testname})
         foreach (var ${${type}_vars})
             set(reference readvar-${type}${MODIFIER}-${var}.out)
             if (WIN32 AND ${type} STREQUAL "writeinf")
                 set(reference readvar-${type}${MODIFIER}-${var}-win.out)
             endif()
-            MATIO_TEST_READ(MATIO-readvar-${testname}-${var} ${reference} test_mat readvar ${TMP_DIR}/${filename} ${var} DEPENDS MATIO-${testname})
+            MATIO_TEST_READ(MATIO-readvar-${testname}-${var} ${reference} test_mat readvar ${filename} ${var} DEPENDS MATIO-${testname})
         endforeach()
         if (${version} STREQUAL "5")
             set(testname ${testname}-compressed)
             set(filename test_${testname}.mat)
-            MATIO_TEST_WRITE(MATIO-${testname} ${filename} test_mat -v ${version} -z ${type} -o ${TMP_DIR}/${filename})
-            # add_test(MATIO-${testname} ${EXECUTABLE} -v ${version} -z ${type} -o ${TMP_DIR}/${filename})
-             # To perform memcheck tests
-            MATIO_TEST_MATLAB_READ(MATIO-matlab-${testname} ${TMP_DIR}/${filename} ${type} NONE DEPENDS MATIO-${testname})
+            MATIO_TEST_WRITE(MATIO-${testname} ${filename} test_mat -v ${version} -z ${type} -o ${filename})
+            MATIO_TEST_MATLAB_READ(MATIO-matlab-${testname} ${filename} ${type} NONE DEPENDS MATIO-${testname})
             foreach (var ${${type}_vars})
                 if ((${type} STREQUAL "write_empty_cell" AND ${var} STREQUAL "var2") OR
                     (${type} STREQUAL "writenull" AND ${var} STREQUAL "cell_null_cells"))
@@ -204,25 +194,22 @@ foreach (version ${VERSIONS})
                 if (WIN32 AND ${type} STREQUAL "writeinf")
                     set(reference readvar-${type}${MODIFIER}-${var}-win.out)
                 endif()
-                MATIO_TEST_READ(MATIO-readvar-${testname}-${var} ${reference} test_mat readvar ${TMP_DIR}/${filename} ${var} DEPENDS MATIO-${testname})
+                MATIO_TEST_READ(MATIO-readvar-${testname}-${var} ${reference} test_mat readvar ${filename} ${var} DEPENDS MATIO-${testname})
             endforeach()
         endif()
     endforeach()
     foreach(type ${MATIO_WRITE_TESTS_NUMERIC})
         foreach(class double single int64 uint64 int32 uint32 int16 uint16 int8 uint8)
             set(testname ${type}-${class}-${version})
-            set(filename ${TMP_DIR}/test_${testname}.mat)
+            set(filename test_${testname}.mat)
             MATIO_TEST_WRITE(MATIO-${testname} ${filename} test_mat -c ${class} -v ${version} ${type})
-            # add_test(MATIO-${testname} ${EXECUTABLE} -c ${class} -v ${version} ${type} -o ${filename})
             set(reference ${type}-${class}.out)
             MATIO_TEST_MATLAB_READ(MATIO-matlab-${testname} ${filename} ${type} ${class} DEPENDS MATIO-${testname})
             MATIO_TEST_READ(MATIO-readvar-${testname} ${reference} test_mat readvar ${filename} a DEPENDS MATIO-${testname})
             if (${version} STREQUAL "5")
                 set(testname ${testname}-compressed)
-                set(filename ${TMP_DIR}/test_${testname}.mat)
-                MATIO_TEST_WRITE(MATIO-${testname} ${filename} test_mat -c ${class} -v ${version} -z ${type})
-                # add_test(MATIO-${testname} ${EXECUTABLE} -c ${class} -v ${version} -z ${type} -o ${filename})
-
+                set(filename test_${testname}.mat)
+                MATIO_TEST_WRITE(MATIO-${testname} ${filename} test_mat -c ${class} -v ${version} -z ${type} -o ${filename})
                 MATIO_TEST_MATLAB_READ(MATIO-matlab-${testname} ${filename} ${type} ${class} DEPENDS MATIO-${testname})
                 MATIO_TEST_READ(MATIO-readvar-${testname} ${reference} test_mat readvar ${filename} a DEPENDS MATIO-${testname})
             endif()
@@ -230,28 +217,27 @@ foreach (version ${VERSIONS})
     endforeach()
 endforeach()
 
-# # # See comment on writeslab above.
-# # XXX why?
-# set_tests_properties(
+# See comment on writeslab above.
+#SET_TESTS_PROPERTIES(
 #    MATIO-readvar-writeslab-7.3-i-COMPARISON
 #    MATIO-readvar-writeslab-7.3-f-COMPARISON MATIO-readvar-writeslab-7.3-d-COMPARISON
 #    MATIO-readvar-writenan-5-d-COMPARISON MATIO-readvar-writenan-5-compressed-d-COMPARISON MATIO-readvar-writenan-7.3-d-COMPARISON
 #    PROPERTIES WILL_FAIL TRUE)
 
-# set_tests_properties(
+#SET_TESTS_PROPERTIES(
 #    MATIO-readvar-writenan-5-d-COMPARISON MATIO-readvar-writenan-5-compressed-d-COMPARISON
 #    PROPERTIES WILL_FAIL TRUE)
-
-# if (MAT73)
-#    set_tests_properties(
+#
+#if (MAT73)
+#    SET_TESTS_PROPERTIES(
 #    MATIO-readvar-writenan-7.3-d-COMPARISON
 #    PROPERTIES WILL_FAIL TRUE)
-# endif()
+#endif()
 
 # See comment on writeslab above.
-if (MATLAB)
-   set_tests_properties( MATIO-matlab-writeslab-7.3 PROPERTIES WILL_FAIL TRUE)
-endif()
+#if (MATLAB)
+#    SET_TESTS_PROPERTIES( MATIO-matlab-writeslab-7.3 PROPERTIES WILL_FAIL TRUE)
+#endif()
 
 set(MATIO_CELL_TESTS   cell_api_set cell_api_getlinear cell_api_getcells)
 set(MATIO_STRUCT_TESTS struct_api_create struct_api_setfield struct_api_getfieldnames struct_api_addfield struct_api_getlinear struct_api_get)
@@ -260,15 +246,15 @@ foreach(type ${MATIO_CELL_TESTS} ${MATIO_STRUCT_TESTS})
     MATIO_TEST_READ(MATIO-${type} ${reference} test_mat ${type})
 endforeach()
 
-foreach(arg ${MATIO_OTHER_FILES})
-   set(testname ${arg})
-   set(filename test_${testname}.mat)
-   if (${arg} STREQUAL "writenull")
-       set(filename test_write_null.mat)
-   endif()
-   set(MATIO_FILES ${MATIO_FILES} ${filename})
-#    MATIO_TEST(MATIO-${testname} ${filename} Null.out test_mat ${arg})
-endforeach()
+#foreach(arg ${MATIO_OTHER_FILES})
+#    set(testname ${arg})
+#    set(filename test_${testname}.mat)
+#    if (${arg} STREQUAL "writenull")
+#        set(filename test_write_null.mat)
+#    endif()
+#    set(MATIO_FILES ${MATIO_FILES} ${filename})
+##    MATIO_TEST(MATIO-${testname} ${filename} Null.out test_mat ${arg})
+#endforeach()
 
 set(MATIO_IND_TESTS ind2sub sub2ind)
 foreach(arg ${MATIO_IND_TESTS})
@@ -276,14 +262,20 @@ foreach(arg ${MATIO_IND_TESTS})
     MATIO_TEST_READ(MATIO-${arg} ${TEST_REFERENCE} test_mat ${arg})
 endforeach()
 
-# XXX what is this?
+#set(DATASETS d f i64 ui64 i32 i16 i8 str)
+#foreach(file ${MATIO_FILES})
+#    MATIO_TEST(MATIO-copy-${file} copy_${file} Copy.out test_mat copy ${file} -o copy_${file})
+#    foreach (var ${DATASETS})
+#        add_test(MATIO-delete-${file} test_mat delete ${file} ${var})
+#    endforeach()
+#endforeach()
 
-# set(MATIO_WRITESLAB_VARS d f i)
-# foreach(var ${MATIO_WRITESLAB_VARS})
+#set(MATIO_WRITESLAB_VARS d f i)
+#foreach(var ${MATIO_WRITESLAB_VARS})
 #    MATIO_TEST(MATIO-readslab-${var} "" test_readslab_${var}.out test_mat readslab test_mat_writeslab.mat ${var})
-# endforeach()
+#endforeach()
 
-# foreach(arg write_struct_2d_numeric write_struct_complex_2d_numeric)
+#foreach(arg write_struct_2d_numeric write_struct_complex_2d_numeric)
 #    set(VERSIONS 4 5)
 #    if (MAT73)
 #        set(VERSIONS ${VERSIONS} 7.3)
@@ -304,20 +296,21 @@ endforeach()
 #            endforeach()
 #        endforeach()
 #    endforeach()
-# endforeach()
+#endforeach()
 
-# # Add more tests for these.
-# set(MATIO_READ_TESTS readvar4 readslab4 slab3)
+# Add more tests for these.
+
+set(MATIO_READ_TESTS readvar4 readslab4 slab3)
 
 # Set tests that are expected to fail (TO BE CORRECTED).
-# XXX : let's not care about fortran now
-# if (ENABLE_FORTRAN)
-#     include_directories(${MATIO_SOURCE_DIR}/src/fortran ${MATIO_BINARY_DIR}/src/fortran)
-#     add_executable(test_matf test_matf.f90)
-#     if (WIN32)
-#         target_link_libraries(test_matf fmatio matio)
-#     else ()
-#         target_link_libraries(test_matf fmatio matio m)
-#     endif()
-#     # TESTS
-# endif()
+
+if (ENABLE_FORTRAN)
+    include_directories(${MATIO_SOURCE_DIR}/src/fortran ${MATIO_BINARY_DIR}/src/fortran)
+    add_executable(test_matf test_matf.f90)
+    if (WIN32)
+        target_link_libraries(test_matf fmatio matio)
+    else ()
+        target_link_libraries(test_matf fmatio matio m)
+    endif()
+    # TESTS
+endif()

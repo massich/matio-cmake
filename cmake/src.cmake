@@ -38,6 +38,8 @@ target_include_directories(matio
 
 if(NOT WIN32)
   target_link_libraries(matio PUBLIC m)
+else()
+  target_link_libraries(matio PUBLIC ${GETOPT_LIB})
 endif()
 
 if(HAVE_HDF5)

@@ -101,6 +101,15 @@ check_function_exists(getopt     HAVE_GETOPT)
 include(cmake/VA_COPY.cmake)
 VA_COPY()
 
+if (NOT HAVE_GETOPT)
+    add_library(gnu STATIC ${PROJECT_SOURCE_DIR}/matio/getopt/getopt_long.c)
+    target_compile_definitions(gnu
+        PUBLIC -DREPLACE_GETOPT)
+    target_include_directories(gnu
+        PUBLIC ${PROJECT_SOURCE_DIR}/matio/getopt/)
+    set(GETOPT_LIB gnu)
+endif()
+
 include(CheckIncludeFile)
 check_include_file(inttypes.h HAVE_INTTYPES_H)
 check_include_file(stdint.h   HAVE_STDINT_H)
@@ -124,6 +133,8 @@ foreach(TYPE ${TYPES})
         message(FATAL_ERROR "Unknown type ${TYPE}")
     endif()
 endforeach()
+
+find_package(Threads)
 
 find_package(HDF5)
 if(HDF5_FOUND)

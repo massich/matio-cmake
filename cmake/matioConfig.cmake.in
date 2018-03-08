@@ -53,14 +53,14 @@
 #cmakedefine HAVE_ZLIB 1
 #cmakedefine MAT73 1
 
-#cmakedefine HAVE_ASPRINTF
+#cmakedefine HAVE_ASPRINTF 1
 #cmakedefine HAVE_C99_VSNPRINTF
-#cmakedefine HAVE_SNPRINTF
+#cmakedefine HAVE_SNPRINTF 1
 #cmakedefine HAVE_STRCASECMP
 #cmakedefine HAVE_VA_COPY
 #cmakedefine HAVE___VA_COPY
-#cmakedefine HAVE_VASPRINTF
-#cmakedefine HAVE_VSNPRINTF
+#cmakedefine HAVE_VASPRINTF 1
+#cmakedefine HAVE_VSNPRINTF 1
 
 #cmakedefine HAVE_CTYPE_H
 #cmakedefine HAVE_STDLIB_H

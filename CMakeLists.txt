@@ -125,6 +125,19 @@ foreach(TYPE ${TYPES})
     endif()
 endforeach()
 
+# Check what matlab format is used by default
+set(DEFAULT_FILE_VERSION "5" CACHE STRING "Default MAT file version (4,5,7.3)")
+
+if (DEFAULT_FILE_VERSION STREQUAL "4")
+    set(MAT_FT_DEFAULT MAT_FT_MAT4)
+elseif (DEFAULT_FILE_VERSION STREQUAL "5")
+    set(MAT_FT_DEFAULT MAT_FT_MAT5)
+elseif (DEFAULT_FILE_VERSION STREQUAL "7.3")
+    set(MAT_FT_DEFAULT MAT_FT_MAT73)
+else()
+    message(ERROR "Unrecognized MAT file version")
+endif()
+
 ## !!! WARNING These are the defines that were defined regardless of an option.
 ## !!! Or the script couldn't match them. Match them accordingly, delete them or keep them
 

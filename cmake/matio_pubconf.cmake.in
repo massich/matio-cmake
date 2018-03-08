@@ -32,14 +32,15 @@
 
 #define MATIO_PLATFORM "@MATIO_PLATFORM@"
 #define PACKAGE_VERSION "@matio_VERSION_MAJOR@.@matio_VERSION_MINOR@.@matio_VERSION_PATCH@"
-#define MATIO_MAJOR_VERSION "@matio_VERSION_MAJOR"
-#define MATIO_MINOR_VERSION "@matio_VERSION_MINOR"
-#define MATIO_RELEASE_LEVEL "@matio_VERSION_PATCH"
+
+#define MATIO_MAJOR_VERSION @matio_VERSION_MAJOR@
+#define MATIO_MINOR_VERSION @matio_VERSION_MINOR@
+#define MATIO_RELEASE_LEVEL @matio_VERSION_PATCH@
 
 /* Default file format */
 #cmakedefine MAT_FT_DEFAULT @MAT_FT_DEFAULT@
 
-#cmakedefine HAVE_INTTYPES_H
+#cmakedefine HAVE_INTTYPES_H 1
 #ifdef HAVE_INTTYPES_H
 #include <inttypes.h>
 #endif
@@ -89,7 +90,7 @@ typedef int8_t   mat_int8_t;
 typedef uint8_t  mat_uint8_t;
 #endif
 
-/* 
+/*
   The following macros handle noreturn attributes according to the latest
   C11/C++11 standard with fallback to GNU, Clang or MSVC extensions if using
   an older compiler.

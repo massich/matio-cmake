@@ -28,6 +28,7 @@ set(src_SOURCES
   ${CMAKE_CURRENT_BINARY_DIR}/matio/src/matio_pubconf.h
   ${CMAKE_CURRENT_BINARY_DIR}/matio/src/matioConfig.h
 )
+
 add_library(matio STATIC ${src_SOURCES} )
 target_include_directories(matio
     PRIVATE ${PROJECT_SOURCE_DIR}/matio/src/
@@ -40,7 +41,7 @@ else()
   target_link_libraries(matio PUBLIC ${GETOPT_LIB})
 endif()
 
-if(HAVE_HDF5)
+if(HDF5_FOUND)
   target_link_libraries(matio
       PUBLIC ${HDF5_LIBRARIES}
   )
@@ -49,7 +50,7 @@ if(HAVE_HDF5)
   )
 endif()
 
-if(HAVE_ZLIB)
+if(ZLIB_FOUND)
   target_link_libraries(matio
       PUBLIC ZLIB::ZLIB
   )

@@ -1,5 +1,3 @@
-set(MATIO_PLATFORM ${CMAKE_SYSTEM_PROCESSOR}-unknown-${CMAKE_SYSTEM_NAME})
-
 configure_file(
   "${PROJECT_SOURCE_DIR}/cmake/matio_pubconf.cmake.in"
   "${CMAKE_CURRENT_BINARY_DIR}/matio/src/matio_pubconf.h"

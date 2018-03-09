@@ -51,7 +51,7 @@ script:
   - if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then echo $DYLD_LIBRARY_PATH; fi
   - echo "cmake .. ${CMAKE_OPTIONS}"
   - cmake .. ${CMAKE_OPTIONS}
-  # - cmake --build .
+  - cmake --build .
   # - ctest -v .
 
 after_success:

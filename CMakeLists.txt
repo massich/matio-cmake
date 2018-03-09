@@ -10,7 +10,7 @@ include(cmake/options.cmake)
 include(cmake/thirdParties.cmake)
 include(cmake/compilerOptions.cmake)
 
-include(cmake/VA_COPY.cmake)
+include(cmake/utils/VA_COPY.cmake)
 VA_COPY()
 
 if (NOT HAVE_GETOPT)
@@ -23,7 +23,7 @@ if (NOT HAVE_GETOPT)
 endif()
 
 
-include(cmake/CheckHeaderSTDC.cmake)
+include(cmake/utils/CheckHeaderSTDC.cmake)
 check_header_stdc()
 
 # Make the variables HAVE_MAT_UINT8_T, etc...

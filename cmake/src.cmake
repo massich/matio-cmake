@@ -44,6 +44,9 @@ if(HAVE_HDF5)
   target_link_libraries(matio
       PUBLIC ${HDF5_LIBRARIES}
   )
+  target_include_directories(matio
+      PRIVATE ${HDF5_INCLUDE_DIRS}
+  )
 endif()
 
 if(HAVE_ZLIB)

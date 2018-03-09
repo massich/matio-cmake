@@ -7,6 +7,7 @@ project( matio
 )
 
 include(cmake/options.cmake)
+include(cmake/thirdParties.cmake)
 
 # Check C types
 include(CheckTypeSize)
@@ -64,17 +65,6 @@ foreach(TYPE ${TYPES})
     endif()
 endforeach()
 
-find_package(Threads)
-
-find_package(HDF5)
-if(HDF5_FOUND)
-    set(HAVE_HDF5 1)
-endif()
-
-find_package(ZLIB)
-if(ZLIB_FOUND)
-    set(HAVE_ZLIB 1)
-endif()
 
 # Setting the include directory for the application to find config.h
 include_directories( ${CMAKE_BINARY_DIR} )

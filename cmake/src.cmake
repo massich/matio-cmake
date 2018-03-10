@@ -43,11 +43,7 @@ endif()
 
 if(HDF5_FOUND)
   target_link_libraries(matio
-      PUBLIC ${HDF5_LIBRARIES}
-  )
-  target_include_directories(matio
-      PRIVATE ${HDF5_INCLUDE_DIRS}
-  )
+    PUBLIC HDF5::HDF5)
 endif()
 
 if(ZLIB_FOUND)

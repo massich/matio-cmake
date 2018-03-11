@@ -2,9 +2,15 @@ enable_testing()
 
 add_executable(test_mat ${PROJECT_SOURCE_DIR}/matio/test/test_mat.c)
 target_link_libraries(test_mat matio)
+target_include_directories(test_mat
+    PRIVATE ${PROJECT_SOURCE_DIR}/matio/src
+    PRIVATE ${PROJECT_BINARY_DIR}/matio/src)
 
 add_executable(test_snprintf ${PROJECT_SOURCE_DIR}/matio/test/test_snprintf.c)
 target_link_libraries(test_snprintf matio)
+target_include_directories(test_snprintf
+    PRIVATE ${PROJECT_SOURCE_DIR}/matio/src
+    PRIVATE ${PROJECT_BINARY_DIR}/matio/src)
 
 option(MATLAB_TESTING "Enable matlab read tests (requires a function matlab)" OFF)
 if (MATLAB_TESTING)
@@ -111,24 +117,42 @@ set(uncompressed_vars ${vars})
 
 set(HDFTESTS)
 if (MAT73)
-    XXX still broken
+    # XXX still broken
     set(HDFTESTS hdf)
     set(hdf_vars ${vars})
-    set(special_vars var23 var27 var52 var66)
+    set(special_vars_5 var24 var27 var50 var65 var66 var69 var95)
+    set(special_vars_73 var24 var69 var95)
 endif()
 
 foreach(vers v4 compressed uncompressed ${HDFTESTS})
-    foreach(endian le be)
+    set(POSSIBLE_ENDIANESS le be)
+    if(${vers} STREQUAL hdf)
+        set(POSSIBLE_ENDIANESS be)  # XXX : le is not supported with HDF5???
+        # XXX : there is no matio_test_cases_compressed_hdf_be.mat
+    endif()
+    foreach(endian ${POSSIBLE_ENDIANESS})
         foreach(var ${${vers}_vars})
             set(MODIFIER)
-            if (${vers} STREQUAL hdf)
-                list(FIND special_vars ${var} special)
-                if (NOT ${special} EQUAL -1)
-                    set(MODIFIER -hdf)
-                endif()
-            endif()
+            # if (${vers} STREQUAL hdf)
+            #     list(FIND special_vars ${var} special)
+            #     if (NOT ${special} EQUAL -1)
+            #         set(MODIFIER -hdf)
+            #     endif()
+            # endif()
             set(testname read-${vers}-${endian}-${var})
             set(input ${PROJECT_SOURCE_DIR}/matio/test/datasets/matio_test_cases_${vers}_${endian}.mat)
+            if (${vers} STREQUAL compressed)
+                list(FIND special_vars_5 ${var} special)
+                if (NOT ${special} EQUAL -1)
+                    set(MODIFIER -5)
+                endif()
+            endif()
+            if (${vers} STREQUAL hdf)
+                list(FIND special_vars_73 ${var} special)
+                if (NOT ${special} EQUAL -1)
+                    set(MODIFIER -73)
+                endif()
+            endif()
             set(reference read-${var}${MODIFIER}.out)
             MATIO_TEST_READ(MATIO-${testname} ${reference} test_mat readvar ${input} ${var})
         endforeach()

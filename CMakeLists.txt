@@ -16,3 +16,5 @@ include(cmake/src.cmake)
 # include(cmake/getopt.cmake)
 # include(cmake/tools.cmake)
 # include(cmake/test.cmake)
+
+include(cmake/packaging.cmake)

@@ -71,8 +71,8 @@ before_build:
 build:
   project: $(APPVEYOR_BUILD_FOLDER)\build\matio.sln
 
-# test_script:
-#   - cmd: ctest -v .
+test_script:
+  - cmd: ctest -v .
 
 deploy: off
 

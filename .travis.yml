@@ -52,7 +52,7 @@ script:
   - echo "cmake .. ${CMAKE_OPTIONS}"
   - cmake .. ${CMAKE_OPTIONS}
   - cmake --build .
-  # - ctest -v .
+  - ctest -v .
 
 after_success:
 

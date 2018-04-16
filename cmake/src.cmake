@@ -1,5 +1,3 @@
-set(MATIO_PLATFORM ${CMAKE_SYSTEM_PROCESSOR}-unknown-${CMAKE_SYSTEM_NAME})
-
 configure_file(
   "${PROJECT_SOURCE_DIR}/cmake/matio_pubconf.cmake.in"
   "${CMAKE_CURRENT_BINARY_DIR}/matio/src/matio_pubconf.h"
@@ -30,6 +28,7 @@ set(src_SOURCES
   ${CMAKE_CURRENT_BINARY_DIR}/matio/src/matio_pubconf.h
   ${CMAKE_CURRENT_BINARY_DIR}/matio/src/matioConfig.h
 )
+
 add_library(matio STATIC ${src_SOURCES} )
 target_include_directories(matio
     PRIVATE ${PROJECT_SOURCE_DIR}/matio/src/
@@ -42,13 +41,12 @@ else()
   target_link_libraries(matio PUBLIC ${GETOPT_LIB})
 endif()
 
-if(HAVE_HDF5)
+if(HDF5_FOUND)
   target_link_libraries(matio
-      PUBLIC ${HDF5_LIBRARIES}
-  )
+    PUBLIC HDF5::HDF5)
 endif()
 
-if(HAVE_ZLIB)
+if(ZLIB_FOUND)
   target_link_libraries(matio
       PUBLIC ZLIB::ZLIB
   )

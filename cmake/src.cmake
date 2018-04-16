@@ -65,6 +65,7 @@ set_target_properties(matio PROPERTIES
 include(GenerateExportHeader)
 generate_export_header(matio)
 
+set(CMAKE_STATIC_LIBRARY_PREFIX "lib")
 
 # 'make install' to the correct locations (provided by GNUInstallDirs).
 install(TARGETS matio EXPORT libmatio

@@ -6,6 +6,9 @@ project( matio
          LANGUAGES C CXX #Fortran
 )
 
+# Installation options
+include(GNUInstallDirs)
+
 include(cmake/options.cmake)
 include(cmake/thirdParties.cmake)
 include(cmake/compilerOptions.cmake)

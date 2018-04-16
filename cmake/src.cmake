@@ -35,6 +35,9 @@ target_include_directories(matio
     PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/matio/src/
 )
 
+set_target_properties(matio PROPERTIES PUBLIC_HEADER "${PROJECT_SOURCE_DIR}/matio/src/matio.h;${CMAKE_CURRENT_BINARY_DIR}/matio/src/matio_pubconf.h") # XXX: check whether matio_pubconf.h or matioConfig.h is the current strategy (one of the two is deprected)
+
+
 if(NOT WIN32)
   target_link_libraries(matio PUBLIC m)
 else()
@@ -61,3 +64,12 @@ set_target_properties(matio PROPERTIES
 # This generates matio_export.h
 include(GenerateExportHeader)
 generate_export_header(matio)
+
+
+# 'make install' to the correct locations (provided by GNUInstallDirs).
+install(TARGETS matio EXPORT libmatio
+        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/static)
+install(EXPORT libmatio NAMESPACE matio:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake)

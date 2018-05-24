@@ -43,41 +43,35 @@ install:
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
 
   ############################################################################
-  # Install CMake
-  ############################################################################
-  - ps: |
-      if (![IO.File]::Exists("C:\cmake-3.10.1-win64-x64\bin\cmake.exe")) {
-        Start-FileDownload 'https://cmake.org/files/v3.10/cmake-3.10.1-win64-x64.zip'
-        7z x -y cmake-3.10.1-win64-x64.zip -oC:\
-      }
-      $env:PATH="C:\cmake-3.10.1-win64-x64\bin;$env:PATH"
-
-  ############################################################################
   # Install Conda
   ############################################################################
   - conda config --add channels conda-forge
-  - conda install hdf5
+  - conda install cmake hdf5 conda-build
 
 before_build:
   - cd %APPVEYOR_BUILD_FOLDER%
   - cmd: git submodule -q update --init
   - ps: |
-      mkdir build
-      cd build
+      mkdir build_appveyor
+      cd build_appveyor
   - ps: $env:hdf5_dir='C:\conda\Library\'
   - ps: $env:CMAKE_PREFIX_PATH='C:\conda\Library\cmake'
-  - cmake -G "Visual Studio 14 2015 Win64" ..
+  - cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_INSTALL_PREFIX=.\simulate_install_dir ..
 
 
 build_script:
   - cmake --build . --config %CONFIGURATION%
   - cpack -C Release
+  - cmake --build . --config %CMAKE_CONFIG% --target install
+  - cd %APPVEYOR_BUILD_FOLDER%\conda_recipe\
+  - conda-build .
+
 
 # test_script:
 #   - cmd: ctest -v .
 
 on_success:
-  - appveyor PushArtifact %APPVEYOR_BUILD_FOLDER%\build\libmatio-1.5.11-Win64.tar.gz
+  - appveyor PushArtifact %APPVEYOR_BUILD_FOLDER%\build_appveyor\libmatio-1.5.11-Win64.tar.gz
 
 deploy: off
 

@@ -1,0 +1,35 @@
+{% set version = "1.5.11" %}
+package:
+  name: matio-cmake
+  version: {{ version }}
+
+source:
+  path: ..
+
+build:
+  number: 0
+  skip: true  # [win and (py27 or win32)]
+  features:
+    - vc14  # [win and py>=35]
+
+requirements:
+  build:
+    - cmake
+    - hdf5 1.8.18|1.8.18.*
+    - zlib 1.2.*
+  run:
+    - hdf5 1.8.18|1.8.18.*
+    - zlib 1.2.*
+
+test:
+  commands:
+    - test -e $PREFIX/include/matio.h      # [unix]
+    - test -e $PREFIX/lib/libmatio.a       # [unix]
+    - test -e $PREFIX/lib/libmatio.dylib   # [osx]
+    - if not exist %PREFIX%\Library\lib\libmatio.lib exit 1  # [win]
+    - if not exist %PREFIX%\Library\include\matio.h exit 1  # [win]
+
+about:
+  home: https://sourceforge.net/projects/matio
+  license: BSD 2-Clause
+  summary: A C library for reading and writing MATLAB MAT files.

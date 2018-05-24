@@ -39,7 +39,7 @@ target_include_directories(matio
 if(NOT WIN32)
   target_link_libraries(matio PUBLIC m)
 else()
-  target_link_libraries(matio PUBLIC ${GETOPT_LIB})
+  # target_link_libraries(matio PUBLIC ${GETOPT_LIB})
   set_target_properties(matio PROPERTIES OUTPUT_NAME libmatio)
 endif()
 
@@ -74,4 +74,4 @@ install(TARGETS matio EXPORT libmatio
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
-# install(EXPORT libmatio NAMESPACE matio:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake)
+install(EXPORT libmatio NAMESPACE matio:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake)

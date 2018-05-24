@@ -5,8 +5,8 @@ platform:
   - x64
 
 configuration:
-  - Debug
-  # - Release
+  # - Debug
+  - Release
 
 image:
   - Visual Studio 2015
@@ -68,11 +68,16 @@ before_build:
   - ps: $env:CMAKE_PREFIX_PATH='C:\conda\Library\cmake'
   - cmake -G "Visual Studio 14 2015 Win64" ..
 
-build:
-  project: $(APPVEYOR_BUILD_FOLDER)\build\matio.sln
+
+build_script:
+  - cmake --build . --config %CONFIGURATION%
+  - cpack -C Release
 
 # test_script:
 #   - cmd: ctest -v .
+
+on_success:
+  - appveyor PushArtifact %APPVEYOR_BUILD_FOLDER%\build\libmatio-1.5.11-Win64.tar.gz
 
 deploy: off
 

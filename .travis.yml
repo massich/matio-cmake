@@ -25,17 +25,21 @@ before_install:
   # Handle everything using conda
   - git clone https://github.com/astropy/ci-helpers.git;
   - source ci-helpers/travis/setup_conda.sh;
-  - conda install cmake hdf5
+  - source deactivate
+  - conda install cmake hdf5 conda-build
 
 
 script:
   - cd ${TRAVIS_BUILD_DIR}
-  - mkdir -p build && cd build
+  - mkdir -p build_travis && cd build_travis
   - if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then echo $LD_LIBRARY_PATH; fi
   - if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then echo $DYLD_LIBRARY_PATH; fi
   - echo "cmake .. ${CMAKE_OPTIONS}"
   - cmake .. ${CMAKE_OPTIONS}
   - cmake --build .
+  - cd $TRAVIS_BUILD_DIR/conda_recipe/
+  - conda-build .
+
   # - ctest -v .
 
 after_success:

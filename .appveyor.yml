@@ -64,7 +64,7 @@ build_script:
   - cpack -C Release
   - cmake --build . --config %CMAKE_CONFIG% --target install
   - cd %APPVEYOR_BUILD_FOLDER%\conda_recipe\
-  # - conda-build .
+  - conda-build .
 
 
 # test_script:

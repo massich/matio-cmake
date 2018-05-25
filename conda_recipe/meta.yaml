@@ -28,10 +28,8 @@ test:
     - test -e $PREFIX/include/matio.h      # [unix]
     - test -e $PREFIX/lib/libmatio.a       # [unix]
     - test -e $PREFIX/lib/libmatio.dylib   # [osx]
-    - if not exist %PREFIX%\Library\bin\libmatio.dll exit 1  # [win]
     - if not exist %PREFIX%\Library\lib\libmatio.lib exit 1  # [win]
     - if not exist %PREFIX%\Library\include\matio.h exit 1  # [win]
-    - set xx=lib /list libmatio.lib # [win] 
 
 about:
   home: https://sourceforge.net/projects/matio

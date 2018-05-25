@@ -37,9 +37,11 @@ script:
   - echo "cmake .. ${CMAKE_OPTIONS}"
   - cmake .. ${CMAKE_OPTIONS}
   - cmake --build .
-  - cd $TRAVIS_BUILD_DIR/conda_recipe/
-  - conda-build .
-
+  - |
+    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+      cd $TRAVIS_BUILD_DIR/conda_recipe/
+      conda-build .
+    fi
   # - ctest -v .
 
 after_success:

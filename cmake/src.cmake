@@ -39,7 +39,7 @@ target_include_directories(matio
 if(NOT WIN32)
   target_link_libraries(matio PUBLIC m)
 else()
-  target_link_libraries(matio PUBLIC ${GETOPT_LIB})
+  # target_link_libraries(matio PUBLIC ${GETOPT_LIB})
   set_target_properties(matio PROPERTIES OUTPUT_NAME libmatio)
 endif()
 

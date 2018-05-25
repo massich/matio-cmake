@@ -56,14 +56,15 @@ before_build:
       cd build_appveyor
   - ps: $env:hdf5_dir='C:\conda\Library\'
   - ps: $env:CMAKE_PREFIX_PATH='C:\conda\Library\cmake'
-  - cmake -G "Visual Studio 14 2015 Win64" ..
+  - cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_INSTALL_PREFIX=.\simulate_install_dir ..
 
 
 build_script:
   - cmake --build . --config %CONFIGURATION%
   - cpack -C Release
+  - cmake --build . --config %CMAKE_CONFIG% --target install
   - cd %APPVEYOR_BUILD_FOLDER%\conda_recipe\
-  - conda-build .
+  # - conda-build .
 
 
 # test_script:

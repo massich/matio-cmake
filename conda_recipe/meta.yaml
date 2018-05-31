@@ -17,11 +17,9 @@ requirements:
     - cmake
     - hdf5 1.8.18|1.8.18.*
     - zlib 1.2.*
-    - vc 14  # [win]
   run:
     - hdf5 1.8.18|1.8.18.*
     - zlib 1.2.*
-    - vc 14  # [win]
 
 test:
   commands:

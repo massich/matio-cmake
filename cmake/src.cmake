@@ -29,53 +29,70 @@ set(src_SOURCES
   ${CMAKE_CURRENT_BINARY_DIR}/matio/src/matioConfig.h
 )
 
-#add_library(matio-static STATIC ${src_SOURCES} )
-#target_include_directories(matio-static
-#    PRIVATE ${PROJECT_SOURCE_DIR}/matio/src/
-#    PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/matio/src/
-#)
-
-add_library(matio SHARED ${src_SOURCES} )
-target_include_directories(matio
-    PRIVATE ${PROJECT_SOURCE_DIR}/matio/src/
-    PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/matio/src/
-)
+# matio_pubconf.h is deprecated but provided for backward compatibility
+set(public_headers 
+    ${PROJECT_SOURCE_DIR}/matio/src/matio.h
+	${CMAKE_CURRENT_BINARY_DIR}/matio/src/matio_pubconf.h
+	${CMAKE_CURRENT_BINARY_DIR}/matio/src/matioConfig.h
+	${CMAKE_CURRENT_BINARY_DIR}/matio_export.h
+	)
+	
+list(APPEND target_outputs "")
+list(APPEND target_outputs "matio")
+list(APPEND target_outputs "matio-static")
 
 if(NOT WIN32)
-  target_link_libraries(matio PUBLIC m)
+	add_library(objects OBJECT ${src_SOURCES})
+	set_target_properties(objects PROPERTIES POSITION_INDEPENDENT_CODE ON)
+	target_include_directories(objects
+							   PRIVATE ${PROJECT_SOURCE_DIR}/matio/src/
+							   PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/matio/src/
+	)
+	add_library(matio-static STATIC $<TARGET_OBJECTS:objects>)
+	set_target_properties(matio-static PROPERTIES OUTPUT_NAME matio)
+	
+	add_library(matio SHARED $<TARGET_OBJECTS:objects>)
 else()
-  # target_link_libraries(matio PUBLIC ${GETOPT_LIB})
-  set_target_properties(matio PROPERTIES OUTPUT_NAME libmatio)
-  target_sources(matio PRIVATE ${PROJECT_SOURCE_DIR}/matio/visual_studio/matio.def)
+	add_library(matio-static STATIC ${src_SOURCES})
+	add_library(matio SHARED ${src_SOURCES})
+	target_sources(matio PRIVATE ${PROJECT_SOURCE_DIR}/matio/visual_studio/matio.def)
 endif()
 
-if(HDF5_FOUND)
-  target_link_libraries(matio
-    PUBLIC HDF5::HDF5)
-endif()
-
-if(ZLIB_FOUND)
-  target_link_libraries(matio
-      PUBLIC ZLIB::ZLIB
-  )
-endif()
-
-# XXX not sure it's the right thing to do...
-set_target_properties(matio PROPERTIES
-  CXX_STANDARD_REQUIRED ON
-  CXX_VISIBILITY_PRESET hidden
-  VISIBILITY_INLINES_HIDDEN 1)
-
-
-# This generates matio_export.h
-include(GenerateExportHeader)
+# This generates matio_export.h	
+include(GenerateExportHeader)	
 generate_export_header(matio)
 
-set_target_properties(matio PROPERTIES PUBLIC_HEADER "${PROJECT_SOURCE_DIR}/matio/src/matio.h;${CMAKE_CURRENT_BINARY_DIR}/matio/src/matio_pubconf.h;${CMAKE_CURRENT_BINARY_DIR}/matio_export.h") # XXX: check whether matio_pubconf.h or matioConfig.h is the current strategy (one of the two is deprected)
+foreach (target ${target_outputs})
+	target_include_directories(${target}
+		PRIVATE ${PROJECT_SOURCE_DIR}/matio/src/
+		PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/matio/src/
+	)
+	
+	if(HDF5_FOUND)
+		target_link_libraries(${target} PUBLIC HDF5::HDF5)
+	endif()
 
+	if(ZLIB_FOUND)
+		target_link_libraries(${target} PUBLIC ZLIB::ZLIB)
+	endif()
+	
+	set_target_properties(${target} PROPERTIES
+						  PUBLIC_HEADER "${public_headers}"
+						  CXX_STANDARD_REQUIRED ON
+						  CXX_VISIBILITY_PRESET hidden
+						  VISIBILITY_INLINES_HIDDEN 1)
+						  
+	if(WIN32)
+		set_target_properties(${target} PROPERTIES
+							  PREFIX lib
+							  IMPORT_PREFIX lib)
+	else()
+		target_link_libraries(${target} PUBLIC m)
+	endif()
+endforeach()				  
 
 # 'make install' to the correct locations (provided by GNUInstallDirs).
-install(TARGETS matio EXPORT libmatio
+install(TARGETS ${target_outputs} EXPORT libmatio
         PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

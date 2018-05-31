@@ -25,6 +25,7 @@ test:
   commands:
     - test -e $PREFIX/include/matio.h      # [unix]
     - test -e $PREFIX/lib/libmatio.so      # [unix]
+    - test -e $PREFIX/lib/libmatio.a       # [unix]
     - test -e $PREFIX/lib/libmatio.dylib   # [osx]
     - if not exist %PREFIX%\Library\lib\libmatio.lib exit 1  # [win]
     - if not exist %PREFIX%\Library\include\matio.h exit 1  # [win]

@@ -29,11 +29,11 @@ set(src_SOURCES
   ${CMAKE_CURRENT_BINARY_DIR}/matio/src/matioConfig.h
 )
 
-#add_library(matio-static STATIC ${src_SOURCES} )
-#target_include_directories(matio-static
-#    PRIVATE ${PROJECT_SOURCE_DIR}/matio/src/
-#    PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/matio/src/
-#)
+add_library(matio-static STATIC ${src_SOURCES} )
+target_include_directories(matio-static
+   PRIVATE ${PROJECT_SOURCE_DIR}/matio/src/
+   PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/matio/src/
+)
 
 add_library(matio SHARED ${src_SOURCES} )
 target_include_directories(matio
@@ -43,14 +43,19 @@ target_include_directories(matio
 
 if(NOT WIN32)
   target_link_libraries(matio PUBLIC m)
+  target_link_libraries(matio-static PUBLIC m)
+  set_target_properties(matio-static PROPERTIES OUTPUT_NAME matio)
 else()
   # target_link_libraries(matio PUBLIC ${GETOPT_LIB})
   set_target_properties(matio PROPERTIES OUTPUT_NAME libmatio)
+  set_target_properties(matio-static PROPERTIES OUTPUT_NAME libmatio-static)
   target_sources(matio PRIVATE ${PROJECT_SOURCE_DIR}/matio/visual_studio/matio.def)
 endif()
 
 if(HDF5_FOUND)
   target_link_libraries(matio
+    PUBLIC HDF5::HDF5)
+  target_link_libraries(matio-static
     PUBLIC HDF5::HDF5)
 endif()
 
@@ -58,10 +63,17 @@ if(ZLIB_FOUND)
   target_link_libraries(matio
       PUBLIC ZLIB::ZLIB
   )
+  target_link_libraries(matio-static
+      PUBLIC ZLIB::ZLIB
+  )
 endif()
 
 # XXX not sure it's the right thing to do...
 set_target_properties(matio PROPERTIES
+  CXX_STANDARD_REQUIRED ON
+  CXX_VISIBILITY_PRESET hidden
+  VISIBILITY_INLINES_HIDDEN 1)
+set_target_properties(matio-static PROPERTIES
   CXX_STANDARD_REQUIRED ON
   CXX_VISIBILITY_PRESET hidden
   VISIBILITY_INLINES_HIDDEN 1)
@@ -75,7 +87,7 @@ set_target_properties(matio PROPERTIES PUBLIC_HEADER "${PROJECT_SOURCE_DIR}/mati
 
 
 # 'make install' to the correct locations (provided by GNUInstallDirs).
-install(TARGETS matio EXPORT libmatio
+install(TARGETS matio matio-static EXPORT libmatio
         PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

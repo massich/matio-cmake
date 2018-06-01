@@ -83,8 +83,14 @@ set_target_properties(matio-static PROPERTIES
 include(GenerateExportHeader)
 generate_export_header(matio)
 
-set_target_properties(matio PROPERTIES PUBLIC_HEADER "${PROJECT_SOURCE_DIR}/matio/src/matio.h;${CMAKE_CURRENT_BINARY_DIR}/matio/src/matio_pubconf.h;${CMAKE_CURRENT_BINARY_DIR}/matio_export.h") # XXX: check whether matio_pubconf.h or matioConfig.h is the current strategy (one of the two is deprected)
-
+# matio_pubconf.h is deprecated but provided for backward compatibility
+set(public_headers
+  ${PROJECT_SOURCE_DIR}/matio/src/matio.h
+  ${CMAKE_CURRENT_BINARY_DIR}/matio/src/matio_pubconf.h
+  ${CMAKE_CURRENT_BINARY_DIR}/matio/src/matioConfig.h
+  ${CMAKE_CURRENT_BINARY_DIR}/matio_export.h
+  )
+set_target_properties(matio PROPERTIES PUBLIC_HEADER "${public_headers}")
 
 # 'make install' to the correct locations (provided by GNUInstallDirs).
 install(TARGETS matio matio-static EXPORT libmatio

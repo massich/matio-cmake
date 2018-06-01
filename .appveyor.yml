@@ -71,7 +71,7 @@ build_script:
 #   - cmd: ctest -v .
 
 on_success:
-  - appveyor PushArtifact %APPVEYOR_BUILD_FOLDER%\build_appveyor\libmatio-1.5.11-Win64.tar.gz
+  - appveyor PushArtifact %APPVEYOR_BUILD_FOLDER%\build_appveyor\libmatio-1.5.4242-Win64.tar.gz
 
 deploy: off
 

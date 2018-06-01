@@ -7,7 +7,7 @@ source:
   path: ..
 
 build:
-  number: 0
+  number: 1
   skip: true  # [win and (py27 or win32)]
   features:
     - vc14  # [win and py>=35]

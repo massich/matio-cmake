@@ -93,9 +93,9 @@ set(public_headers
 set_target_properties(matio PROPERTIES PUBLIC_HEADER "${public_headers}")
 
 # 'make install' to the correct locations (provided by GNUInstallDirs).
-install(TARGETS matio matio-static EXPORT libmatio
+install(TARGETS matio matio-static EXPORT matio
         PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
-install(EXPORT libmatio NAMESPACE matio:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake)
+install(EXPORT matio NAMESPACE MATIO:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake)

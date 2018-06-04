@@ -1,6 +1,7 @@
 
 find_package(Threads)
 
+set(HDF5_USE_STATIC_LIBRARIES TRUE)
 find_package(HDF5)
 
 find_package(ZLIB)

@@ -7,7 +7,7 @@ source:
   path: ..
 
 build:
-  number: 2
+  number: 3
   skip: true  # [win and (py27 or win32)]
   features:
     - vc14  # [win and py>=35]
@@ -26,15 +26,13 @@ test:
     - test -e $PREFIX/include/matio.h            # [unix]
     - test -e $PREFIX/include/matio_pubconf.h    # [unix]
     - test -e $PREFIX/include/matioConfig.h      # [unix]
-    - test -e $PREFIX/lib/libmatio.so            # [unix]
     - test -e $PREFIX/lib/libmatio.a             # [unix]
     - test -e $PREFIX/lib/cmake/matio-config.cmake      # [unix]
     - test -e $PREFIX/lib/libmatio.dylib         # [osx]
     - if not exist %PREFIX%\Library\include\matio.h exit 1             # [win]
     - if not exist %PREFIX%\Library\include\matio_pubconf.h exit 1     # [win]
+    - if not exist %PREFIX%\Library\include\matio_export.h exit 1     # [win]
     - if not exist %PREFIX%\Library\include\matioConfig.h exit 1       # [win]
-    - if not exist %PREFIX%\Library\bin\libmatio.dll exit 1            # [win]
-    - if not exist %PREFIX%\Library\lib\libmatio.lib exit 1            # [win]
     - if not exist %PREFIX%\Library\lib\libmatio-static.lib exit 1     # [win]
     - if not exist %PREFIX%\Library\lib\cmake\matio-config.cmake exit 1    # [win]
     - if not exist %PREFIX%\Library\lib\cmake\matio-config-release.cmake exit 1  # [win]

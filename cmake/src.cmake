@@ -4,7 +4,7 @@ configure_file(
   ESCAPE_QUOTES @ONLY)
 
 configure_file(
-  "${PROJECT_SOURCE_DIR}/cmake/matioConfig.cmake.in"
+  "${PROJECT_SOURCE_DIR}/cmake/matioConfigHeader.cmake.in"
   "${CMAKE_CURRENT_BINARY_DIR}/matio/src/matioConfig.h"
   ESCAPE_QUOTES @ONLY)
 
@@ -29,16 +29,27 @@ set(src_SOURCES
   ${CMAKE_CURRENT_BINARY_DIR}/matio/src/matioConfig.h
 )
 
+set(CMAKE_SKIP_BUILD_RPATH FALSE)
+set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}")
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
+if("${isSystemDir}" STREQUAL "-1")
+    set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+endif("${isSystemDir}" STREQUAL "-1")
+
 add_library(matio-static STATIC ${src_SOURCES} )
 target_include_directories(matio-static
    PRIVATE ${PROJECT_SOURCE_DIR}/matio/src/
    PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/matio/src/
+   PUBLIC $<INSTALL_INTERFACE:include/matio>
 )
 
 add_library(matio SHARED ${src_SOURCES} )
 target_include_directories(matio
     PRIVATE ${PROJECT_SOURCE_DIR}/matio/src/
     PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/matio/src/
+    PUBLIC $<INSTALL_INTERFACE:include/matio>
 )
 
 if(NOT WIN32)
@@ -53,10 +64,13 @@ else()
 endif()
 
 if(HDF5_FOUND)
-  target_link_libraries(matio
-    PUBLIC HDF5::HDF5)
-  target_link_libraries(matio-static
-    PUBLIC HDF5::HDF5)
+  if(WIN32)
+    target_link_libraries(matio PUBLIC hdf5::hdf5-shared)
+    target_link_libraries(matio-static PUBLIC hdf5::hdf5-static)
+  else()
+      target_link_libraries(matio PUBLIC HDF5::HDF5)
+      target_link_libraries(matio-static PUBLIC HDF5::HDF5)
+  endif()
 endif()
 
 if(ZLIB_FOUND)
@@ -92,10 +106,23 @@ set(public_headers
   )
 set_target_properties(matio PROPERTIES PUBLIC_HEADER "${public_headers}")
 
+include(CMakePackageConfigHelpers)
+set(MATIO_CMAKECONFIG_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}" CACHE
+    STRING "install path for xmatioConfig.cmake")
+
+configure_package_config_file(${PROJECT_SOURCE_DIR}/cmake/matioConfig.cmake.in
+                              "${CMAKE_CURRENT_BINARY_DIR}/matioConfig.cmake"
+                              INSTALL_DESTINATION ${MATIO_CMAKECONFIG_INSTALL_DIR})
+
 # 'make install' to the correct locations (provided by GNUInstallDirs).
-install(TARGETS matio matio-static EXPORT matio-config
-        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+install(TARGETS matio matio-static EXPORT matio-targets
+        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/matio
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
-install(EXPORT matio-config NAMESPACE MATIO:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/matioConfig.cmake
+        DESTINATION ${MATIO_CMAKECONFIG_INSTALL_DIR})
+install(EXPORT matio-targets
+        FILE matioTargets.cmake
+        NAMESPACE MATIO::
+        DESTINATION ${MATIO_CMAKECONFIG_INSTALL_DIR})

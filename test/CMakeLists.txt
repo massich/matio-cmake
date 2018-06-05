@@ -1,18 +1,12 @@
+cmake_minimum_required(VERSION 3.2)
+project(matio_test)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
 
+find_package(matio REQUIRED)
 find_package(Threads)
-
 find_package(HDF5)
-
 find_package(ZLIB)
-if (HDF5_FOUND)
-	set(HAVE_HDF5 1)
-endif()
-
-if(ZLIB_FOUND)
-	set(HAVE_ZLIB 1)
-endif()
-
-# FindHDF5.cmake does not expose a modern CMake Target
 
 if (HDF5_FOUND AND NOT TARGET HDF5::HDF5)
     add_library(HDF5::HDF5 INTERFACE IMPORTED)
@@ -20,3 +14,7 @@ if (HDF5_FOUND AND NOT TARGET HDF5::HDF5)
         INTERFACE_INCLUDE_DIRECTORIES "${HDF5_INCLUDE_DIRS}"
         INTERFACE_LINK_LIBRARIES "${HDF5_LIBRARIES}")
 endif()
+
+add_executable(hello main.cpp)
+target_link_libraries(hello PUBLIC MATIO::matio)
+

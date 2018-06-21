@@ -6,6 +6,13 @@ project( matio
          LANGUAGES C CXX #Fortran
 )
 
+find_package(Git)
+if(Git_FOUND)
+  message(STATUS "Git found: ${GIT_EXECUTABLE}")
+  else()
+  message(FATAL_ERROR "Git NOT found")
+endif()
+
 include(ExternalProject)
 ExternalProject_Add(matio-download
   GIT_REPOSITORY    git@github.com:tbeu/matio.git

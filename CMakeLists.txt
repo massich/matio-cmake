@@ -6,6 +6,18 @@ project( matio
          LANGUAGES C CXX #Fortran
 )
 
+include(ExternalProject)
+ExternalProject_Add(matio-download
+  GIT_REPOSITORY    git@github.com:tbeu/matio.git
+  # DOWNLOAD_COMMAND git clone git@github.com:tbeu/matio.git /tmp/foo/xx
+  GIT_TAG           v1.5.11
+  # SOURCE_DIR      /tmp/foo/yy
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND ""
+  INSTALL_COMMAND ""
+  LOG_DOWNLOAD ON
+)
+
 # Installation options
 include(GNUInstallDirs)
 
@@ -19,5 +31,6 @@ include(cmake/src.cmake)
 # include(cmake/getopt.cmake)
 # include(cmake/tools.cmake)
 # include(cmake/test.cmake)
+add_dependencies(matio matio-download)
 
 include(cmake/packaging.cmake)

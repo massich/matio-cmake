@@ -35,7 +35,7 @@ before_install:
   ############################################################################
   # Install a recent CMake
   ############################################################################
-  - CMAKE_VERSION=3.10.1
+  - CMAKE_VERSION=3.12.0-rc1
   - curl -fsSkL https://raw.githubusercontent.com/openmeeg/ci-utils/master/travis/install_cmake.sh > x.sh && source ./x.sh
 
   ############################################################################

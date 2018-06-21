@@ -49,11 +49,11 @@ install:
   # Install CMake
   ############################################################################
   - ps: |
-      if (![IO.File]::Exists("C:\cmake-3.10.1-win64-x64\bin\cmake.exe")) {
-        Start-FileDownload 'https://cmake.org/files/v3.10/cmake-3.10.1-win64-x64.zip'
-        7z x -y cmake-3.10.1-win64-x64.zip -oC:\
+      if (![IO.File]::Exists("C:\cmake-3.12.0-rc1-win64-x64\bin\cmake.exe")) {
+        Start-FileDownload 'https://cmake.org/files/v3.12/cmake-3.12.0-rc1-win64-x64.zip'
+        7z x -y cmake-3.12.0-rc1-win64-x64.zip -oC:\
       }
-      $env:PATH="C:\cmake-3.10.1-win64-x64\bin;$env:PATH"
+      $env:PATH="C:\cmake-3.12.0-rc1-win64-x64\bin;$env:PATH"
 
   ############################################################################
   # Install Conda

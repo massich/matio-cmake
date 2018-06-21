@@ -1,4 +1,7 @@
 shallow_clone: false
+branches:
+  only:
+    - master
 
 platform:
   # - x86

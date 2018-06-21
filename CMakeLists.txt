@@ -13,6 +13,8 @@ if(Git_FOUND)
   message(FATAL_ERROR "Git NOT found")
 endif()
 
+
+include(FetchContent)
 FetchContent_Declare(
   matio-download
   GIT_REPOSITORY    https://github.com/tbeu/matio.git

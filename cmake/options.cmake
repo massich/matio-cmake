@@ -4,7 +4,7 @@
 option( COVERAGE "Enable coverage testing" OFF )
 
 # Option to on debugging
-option( DEBUG "on debugging" ON )
+option( DEBUG "on debugging" OFF )
 
 # Option to extended sparse matrix data types not supported in Matlab
 option( EXTENDED_SPARSE "extended sparse matrix data types not supported in Matlab" ON )

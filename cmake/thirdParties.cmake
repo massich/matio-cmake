@@ -1,9 +1,18 @@
 
 find_package(Threads)
 
+set(HDF5_USE_STATIC_LIBRARIES TRUE)
 find_package(HDF5)
 
 find_package(ZLIB)
+
+if (HDF5_FOUND)
+	set(HAVE_HDF5 1)
+endif()
+
+if(ZLIB_FOUND)
+	set(HAVE_ZLIB 1)
+endif()
 
 # FindHDF5.cmake does not expose a modern CMake Target
 

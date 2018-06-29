@@ -29,33 +29,34 @@ set(src_SOURCES
   ${CMAKE_CURRENT_BINARY_DIR}/matio/src/matioConfig.h
 )
 
-add_library(matio STATIC ${src_SOURCES} )
-target_include_directories(matio
-    PRIVATE ${PROJECT_SOURCE_DIR}/matio/src/
-    PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/matio/src/
+add_library(matio-static STATIC ${src_SOURCES} )
+target_include_directories(matio-static
+   PRIVATE ${PROJECT_SOURCE_DIR}/matio/src/
+   PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/matio/src/
 )
 
-
 if(NOT WIN32)
-  target_link_libraries(matio PUBLIC m)
+  target_link_libraries(matio-static PUBLIC m)
+  set_target_properties(matio-static PROPERTIES OUTPUT_NAME matio)
 else()
-  target_link_libraries(matio PUBLIC ${GETOPT_LIB})
-  set_target_properties(matio PROPERTIES OUTPUT_NAME libmatio)
+  # target_link_libraries(matio PUBLIC ${GETOPT_LIB})
+  set_target_properties(matio-static PROPERTIES OUTPUT_NAME libmatio-static)
+  target_sources(matio-static PRIVATE ${PROJECT_SOURCE_DIR}/matio/visual_studio/matio.def)
 endif()
 
 if(HDF5_FOUND)
-  target_link_libraries(matio
+  target_link_libraries(matio-static
     PUBLIC HDF5::HDF5)
 endif()
 
 if(ZLIB_FOUND)
-  target_link_libraries(matio
+  target_link_libraries(matio-static
       PUBLIC ZLIB::ZLIB
   )
 endif()
 
 # XXX not sure it's the right thing to do...
-set_target_properties(matio PROPERTIES
+set_target_properties(matio-static PROPERTIES
   CXX_STANDARD_REQUIRED ON
   CXX_VISIBILITY_PRESET hidden
   VISIBILITY_INLINES_HIDDEN 1)
@@ -63,15 +64,21 @@ set_target_properties(matio PROPERTIES
 
 # This generates matio_export.h
 include(GenerateExportHeader)
-generate_export_header(matio)
+generate_export_header(matio-static EXPORT_FILE_NAME matio_export.h)
 
-set_target_properties(matio PROPERTIES PUBLIC_HEADER "${PROJECT_SOURCE_DIR}/matio/src/matio.h;${CMAKE_CURRENT_BINARY_DIR}/matio/src/matio_pubconf.h;${CMAKE_CURRENT_BINARY_DIR}/matio_export.h") # XXX: check whether matio_pubconf.h or matioConfig.h is the current strategy (one of the two is deprected)
-
+# matio_pubconf.h is deprecated but provided for backward compatibility
+set(public_headers
+  ${PROJECT_SOURCE_DIR}/matio/src/matio.h
+  ${CMAKE_CURRENT_BINARY_DIR}/matio/src/matio_pubconf.h
+  ${CMAKE_CURRENT_BINARY_DIR}/matio/src/matioConfig.h
+  ${CMAKE_CURRENT_BINARY_DIR}/matio_export.h
+  )
+set_target_properties(matio-static PROPERTIES PUBLIC_HEADER "${public_headers}")
 
 # 'make install' to the correct locations (provided by GNUInstallDirs).
-install(TARGETS matio EXPORT libmatio
+install(TARGETS matio-static EXPORT matio-config
         PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
-# install(EXPORT libmatio NAMESPACE matio:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake)
+install(EXPORT matio-config NAMESPACE MATIO:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake)

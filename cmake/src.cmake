@@ -29,18 +29,24 @@ set(src_SOURCES
   ${CMAKE_CURRENT_BINARY_DIR}/matio/src/matioConfig.h
 )
 
-add_library(matio STATIC ${src_SOURCES} )
+#add_library(matio-static STATIC ${src_SOURCES} )
+#target_include_directories(matio-static
+#    PRIVATE ${PROJECT_SOURCE_DIR}/matio/src/
+#    PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/matio/src/
+#)
+
+add_library(matio SHARED ${src_SOURCES} )
 target_include_directories(matio
     PRIVATE ${PROJECT_SOURCE_DIR}/matio/src/
     PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/matio/src/
 )
 
-
 if(NOT WIN32)
   target_link_libraries(matio PUBLIC m)
 else()
-  target_link_libraries(matio PUBLIC ${GETOPT_LIB})
+  # target_link_libraries(matio PUBLIC ${GETOPT_LIB})
   set_target_properties(matio PROPERTIES OUTPUT_NAME libmatio)
+  target_sources(matio PRIVATE ${PROJECT_SOURCE_DIR}/matio/visual_studio/matio.def)
 endif()
 
 if(HDF5_FOUND)
@@ -74,4 +80,4 @@ install(TARGETS matio EXPORT libmatio
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
-# install(EXPORT libmatio NAMESPACE matio:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake)
+install(EXPORT libmatio NAMESPACE matio:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake)

@@ -29,9 +29,9 @@ if (ENABLE_PACKAGING)
     set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${PACKAGE_ARCH_SHORT}")
 
     # Following https://blog.quickmediasolutions.com/2017/11/24/using-windeployqt-with-cpack.html
-    set(CMAKE_INSTALL_UCRT_LIBRARIES TRUE)
+    # set(CMAKE_INSTALL_UCRT_LIBRARIES FALSE)
     # set(CMAKE_INSTALL_OPENMP_LIBRARIES TRUE)
-    include(InstallRequiredSystemLibraries)
+    #include(InstallRequiredSystemLibraries)
     include(CPack)
 
 endif()
